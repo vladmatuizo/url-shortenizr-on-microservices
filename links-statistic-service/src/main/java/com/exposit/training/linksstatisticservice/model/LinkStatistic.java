@@ -1,5 +1,6 @@
 package com.exposit.training.linksstatisticservice.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 public class LinkStatistic {
 
     @Id
+    @Column(length = 10)
     private String shortenizrKey;
     private long linkFollowingCount;
     private LocalDateTime creationDate;

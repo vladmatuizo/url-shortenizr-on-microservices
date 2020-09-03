@@ -5,28 +5,35 @@ import com.exposit.training.linksstatisticservice.repository.LinkStatisticReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 public class LinkStatisticService {
 
-    @Autowired
-    private LinkStatisticRepository repo;
+    private final LinkStatisticRepository repo;
 
-    public boolean addStatistic(String sourceUrl, String shortenizrKey) {
-        if (repo.findById(shortenizrKey).isEmpty()){
-            LocalDateTime now = LocalDateTime.now();
-            LinkStatistic res = repo.save(new LinkStatistic(shortenizrKey, 0, now, now, sourceUrl));
-            return res != null;
-        }
-        return false;
+    @Autowired
+    public LinkStatisticService(LinkStatisticRepository repo) {
+        this.repo = repo;
     }
 
-    public boolean updateStatistic(String sourceUrl){
+    public boolean addStatistic(String sourceUrl, String shortenizrKey) {
+        if (repo.findById(shortenizrKey).isPresent()) return false;
+        repo.save(new LinkStatistic(shortenizrKey, 0,
+                LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS), LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
+                sourceUrl));
+        return true;
+    }
+
+    public boolean updateStatistic(String sourceUrl) {
         LinkStatistic linkStatistic = repo.findBySourceLink(sourceUrl);
         if (linkStatistic != null) {
             linkStatistic.setLastFollowingDate(LocalDateTime.now());
             linkStatistic.setLinkFollowingCount(linkStatistic.getLinkFollowingCount() + 1);
+
             repo.save(linkStatistic);
             return true;
         }
@@ -34,6 +41,10 @@ public class LinkStatisticService {
     }
 
     public LinkStatistic getStatistic(String key) {
-        return repo.findById(key).orElseThrow();
+        return repo.findById(key).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public List<LinkStatistic> getAllStatistic() {
+        return repo.findAll();
     }
 }

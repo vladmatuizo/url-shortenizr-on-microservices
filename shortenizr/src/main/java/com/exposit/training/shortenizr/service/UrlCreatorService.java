@@ -1,34 +1,31 @@
 package com.exposit.training.shortenizr.service;
 
 import com.exposit.training.shortenizr.model.Link;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
-@Component
+@Service
 public class UrlCreatorService {
 
-    private static MessageDigest MD5;
-    private static String LatinAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final String ENCODING_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    static {
-        try {
-            MD5 = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+    private final MessageDigest md5;
+
+    public UrlCreatorService(MessageDigest md5) {
+        this.md5 = md5;
     }
 
+
     public Link create(String sourceUrl) {
-        byte[] digest = MD5.digest(sourceUrl.getBytes(StandardCharsets.UTF_8));
+        byte[] digest = md5.digest(sourceUrl.getBytes(StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < digest.length; i+=2) {
             int finalI = i;
-            builder.append(LatinAlphabet.codePoints().anyMatch(v -> v == digest[finalI])
-                    ? digest[i]
-                    : String.valueOf(LatinAlphabet.charAt(Math.abs(digest[i] % LatinAlphabet.length())))
+            builder.append(ENCODING_ALPHABET.codePoints().anyMatch(v -> v == digest[finalI])
+                    ? (char) digest[i]
+                    : String.valueOf(ENCODING_ALPHABET.charAt(Math.abs(digest[i] % ENCODING_ALPHABET.length())))
             );
         }
         Link link = new Link();

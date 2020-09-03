@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.Optional;
@@ -18,12 +17,16 @@ public class UrlController {
 
     private static final String HEADER_NAME = "Location";
 
+    private final UrlCreatorService urlCreatorService;
+    private final LinkRepository linkRepository;
+    private final LinkStatisticExchangeServiceProxy proxy;
+
     @Autowired
-    private UrlCreatorService urlCreatorService;
-    @Autowired
-    private LinkRepository linkRepository;
-    @Autowired
-    private LinkStatisticExchangeServiceProxy proxy;
+    public UrlController(UrlCreatorService urlCreatorService, LinkRepository linkRepository, LinkStatisticExchangeServiceProxy proxy) {
+        this.urlCreatorService = urlCreatorService;
+        this.linkRepository = linkRepository;
+        this.proxy = proxy;
+    }
 
     @PutMapping("/createUrl")
     public ResponseEntity<Link> createUrl(@RequestBody String url) {
