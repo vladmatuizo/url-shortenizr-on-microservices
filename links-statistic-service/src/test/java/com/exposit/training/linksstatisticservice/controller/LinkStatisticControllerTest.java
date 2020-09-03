@@ -6,9 +6,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -16,11 +23,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 
 @RunWith(SpringRunner.class)
+@ActiveProfiles("test")
 @WebMvcTest(LinkStatisticController.class)
+@ImportAutoConfiguration({RefreshAutoConfiguration.class})
 public class LinkStatisticControllerTest {
 
     @Autowired

@@ -5,6 +5,9 @@ public class LinkDto {
     private String key;
     private String sourceUrl;
 
+    public LinkDto() {
+    }
+
     public LinkDto(String key, String sourceUrl) {
         this.key = key;
         this.sourceUrl = sourceUrl;

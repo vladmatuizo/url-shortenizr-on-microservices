@@ -10,16 +10,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
+@ActiveProfiles("test")
 public class LinkStatisticServiceTest {
 
     @MockBean
@@ -107,7 +109,7 @@ public class LinkStatisticServiceTest {
         try {
             service.getStatistic(key);
         } catch (Exception e) {
-            Assertions.assertThat(e).isInstanceOf(NoSuchElementException.class);
+            Assertions.assertThat(e).isInstanceOf(EntityNotFoundException.class);
         }
 
     }

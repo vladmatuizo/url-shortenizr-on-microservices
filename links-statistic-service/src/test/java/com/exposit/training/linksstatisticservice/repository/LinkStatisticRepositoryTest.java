@@ -6,14 +6,19 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 
 @RunWith(SpringRunner.class)
+@ActiveProfiles("test")
 @DataJpaTest
+@ImportAutoConfiguration({RefreshAutoConfiguration.class})
 public class LinkStatisticRepositoryTest {
 
     @Autowired
