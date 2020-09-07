@@ -1,0 +1,51 @@
+version: "3"
+services:
+
+  rabbit:
+    image: rabbitmq
+
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+
+  config-server:
+    build:
+      config-server\\
+
+  eureka:
+    build:
+      eureka-naming-server\\
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-server
+  zuul:
+    build:
+      zuul-api-gateway-server\\
+    depends_on:
+      - config-server
+      - eureka
+  links-statistic-service:
+    build:
+      links-statistic-service\\
+    ports:
+      - "8100"
+    depends_on:
+      - config-server
+      - eureka
+  shortenizr:
+    build:
+      shortenizr\\
+    ports:
+      - "8000"
+    depends_on:
+      - config-server
+      - eureka
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411"
+    depends_on:
+      - config-server
+      - eureka
