@@ -28,8 +28,9 @@ public class UrlController {
         this.proxy = proxy;
     }
 
+    @CrossOrigin
     @PutMapping("/createUrl")
-    public ResponseEntity<Link> createUrl(@RequestBody String url) {
+    public ResponseEntity<String> createUrl(@RequestBody String url) {
         Link resLink = urlCreatorService.create(url);
         linkRepository.save(resLink);
 
@@ -38,12 +39,14 @@ public class UrlController {
         //With Feign proxy
         proxy.addStatistic(resLink);
 
-        return ResponseEntity.created(URI.create(String.format("http://localhost:8000/%s", resLink.getKey())))
-                .build();
+        final String link = String.format("http://localhost:8000/%s", resLink.getKey());
+        return ResponseEntity.created(URI.create(link))
+                .body(link);
     }
 
+    @CrossOrigin(origins = "*", methods = RequestMethod.GET)
     @GetMapping("/{key}")
-    public ResponseEntity redirect(@PathVariable("key") String key) {
+    public ResponseEntity<?> redirect(@PathVariable("key") String key) {
         Optional<Link> linkOpt = linkRepository.findById(key);
         if (linkOpt.isPresent()) {
             Link link = linkOpt.get();
@@ -51,8 +54,14 @@ public class UrlController {
             //new RestTemplate().postForLocation("http://localhost:8100/statistic", link);
             //With Feign proxy
             proxy.updateStatistic(link);
+
+            String location = link.getSourceUrl();
+            final URI uri = URI.create(location);
+            if (!uri.isAbsolute()) {
+                location = "https://".concat(location);
+            }
             return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
-                    .header(HEADER_NAME, link.getSourceUrl())
+                    .header(HEADER_NAME, location)
                     .build();
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
