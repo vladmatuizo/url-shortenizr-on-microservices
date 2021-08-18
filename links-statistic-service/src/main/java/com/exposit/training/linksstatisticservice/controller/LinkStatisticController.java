@@ -18,11 +18,13 @@ public class LinkStatisticController {
     @Autowired
     private LinkStatisticService statisticService;
 
+    @CrossOrigin(origins = "*", methods = RequestMethod.GET)
     @GetMapping("/statistic")
     public ResponseEntity<List<LinkStatistic>> getAllStatistic() {
         return ResponseEntity.ok(statisticService.getAllStatistic());
     }
 
+    @CrossOrigin(origins = "*", methods = RequestMethod.GET)
     @GetMapping("/statistic/{key}")
     public ResponseEntity<LinkStatistic> getStatistic(@PathVariable(name = "key") String key) {
         return ResponseEntity.ok(statisticService.getStatistic(key));
